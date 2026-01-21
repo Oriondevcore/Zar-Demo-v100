@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZAR Hotel Concierge</title>
+    <style>
+        /* --- ZAR HOTEL BRANDING COLORS --- */
+        :root {
+            --primary: #2c3e50; /* Industrial Chic Dark Blue/Grey */
+            --accent: #e67e22;  /* Warm accent (Bronze/Orange) */
+            --bg: #f3f4f6;
+            --chat-bg: #ffffff;
+        }
+
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        
+        /* HEADER */
+        header { background: var(--primary); color: white; padding: 15px; text-align: center; font-weight: bold; letter-spacing: 1px; }
+
+        /* CHAT AREA */
+        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .message { max-width: 80%; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+        .bot { align-self: flex-start; background: var(--chat-bg); color: #333; border-bottom-left-radius: 4px; }
+        .loading { font-style: italic; color: #888; font-size: 0.8em; }
+
+        /* QUICK BUTTONS */
+        #quick-buttons { padding: 10px; display: flex; gap: 8px; overflow-x: auto; background: #e9e9e9; -webkit-overflow-scrolling: touch; }
+        .q-btn { background: white; border: 1px solid #ccc; color: #333; padding: 8px 15px; border-radius: 20px; cursor: pointer; white-space: nowrap; font-size: 14px; }
+        .q-btn:hover { background: var(--primary); color: white; }
+        .q-btn.emergency { background: #ffdddd; color: #c0392b; border-color: #c0392b; font-weight: bold; }
+
+        /* INPUT AREA */
+        #input-area { display: flex; padding: 15px; background: white; border-top: 1px solid #ddd; align-items: center; gap: 10px; }
+        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none; font-size: 16px; }
+        
+        button.icon-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; transition: transform 0.2s; }
+        button.icon-btn:active { transform: scale(0.9); }
+        .mic-active { color: red; animation: pulse 1.5s infinite; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <header>ZAR HOTEL CONCIERGE</header>
+
+    <div id="chat-container">
+        <div class="message bot">Hello! Welcome to ZAR Hotel. I can help with room service, local tips, or bookings. Try asking about "Monkey Man" burgers!</div>
+    </div>
+
+    <div id="quick-buttons">
+        <button class="q-btn" onclick="sendQuick('What is the WiFi password?')">📶 WiFi</button>
+        <button class="q-btn" onclick="sendQuick('What time is check out?')">⏰ Check-out</button>
+        <button class="q-btn" onclick="sendQuick('Show me the Monkey Man menu')">🍔 Dining</button>
+        <button class="q-btn" onclick="openWhatsApp()">💬 WhatsApp</button>
+        <button class="q-btn emergency" onclick="triggerEmergency()">🚨 EMERGENCY</button>
+    </div>
+
+    <div id="input-area">
+        <input type="text" id="user-input" placeholder="Type or speak..." onkeypress="handleEnter(event)">
+        <button class="icon-btn" id="mic-btn" onclick="toggleVoice()">🎙️</button>
+        <button class="icon-btn" onclick="sendMessage()">➤</button>
+    </div>
+
+    <script>
+        // ----------------------------------------------------
+        // ⚙️ CONFIGURATION
+        // Paste the Web App URL you copied from Google Apps Script here:
+        const API_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+        const WHATSAPP_NUM = "27310010788"; // International format, no + or spaces
+        // ----------------------------------------------------
+
+        let chatHistory = ""; // We store context locally to send to the brain
+
+        // 1. MESSAGING LOGIC
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // UI Updates
+            addMessage(message, 'user');
+            input.value = '';
+            showLoading(true);
+
+            // Update History
+            chatHistory += `\nGuest: ${message}`;
+
+            try {
+                // Send to Google Apps Script (Backend)
+                // Note: We use 'text/plain' to avoid CORS preflight options request issues in simple scripts
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "chat", message: message, history: chatHistory })
+                });
+                
+                const data = await response.json();
+                
+                showLoading(false);
+                addMessage(data.reply, 'bot');
+                speak(data.reply); // Voice Output
+
+                // Append Bot reply to history
+                chatHistory += `\nConcierge: ${data.reply}`;
+
+            } catch (error) {
+                showLoading(false);
+                addMessage("I'm having trouble connecting to the front desk system. Please try again.", 'bot');
+                console.error(error);
+            }
+        }
+
+        // 2. HELPER FUNCTIONS
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+            // Convert simple links to clickable anchors
+            div.innerHTML = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:white; text-decoration:underline;">Book Here</a>');
+            
+            const container = document.getElementById('chat-container');
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendQuick(text) {
+            document.getElementById('user-input').value = text;
+            sendMessage();
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        let loadingDiv;
+        function showLoading(show) {
+            if (show) {
+                loadingDiv = document.createElement('div');
+                loadingDiv.className = 'message bot loading';
+                loadingDiv.innerText = 'Typing...';
+                document.getElementById('chat-container').appendChild(loadingDiv);
+            } else if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        // 3. VOICE FEATURES (Browser Native)
+        // Speech to Text (Input)
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-ZA'; // South African English
+            recognition.continuous = false;
+
+            recognition.onstart = () => document.getElementById('mic-btn').classList.add('mic-active');
+            recognition.onend = () => document.getElementById('mic-btn').classList.remove('mic-active');
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('user-input').value = transcript;
+                sendMessage(); // Auto-send
+            };
+        }
+
+        function toggleVoice() {
+            if (!recognition) { alert("Voice not supported in this browser"); return; }
+            recognition.start();
+        }
+
+        // Text to Speech (Output)
+        function speak(text) {
+            // Strip out URLS so the robot doesn't read "https colon slash slash..."
+            const cleanText = text.replace(/(https?:\/\/[^\s]+)/g, "check the link.");
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = 'en-GB'; // British accent sounds a bit more like SA English than US
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // 4. WHATSAPP & EMERGENCY
+        function openWhatsApp() {
+            window.open(`https://wa.me/${WHATSAPP_NUM}?text=Hi%20ZAR%20Hotel,%20I%20have%20a%20question...`, '_blank');
+        }
+
+        function triggerEmergency() {
+            if(confirm("Are you sure this is an emergency? This will alert staff.")) {
+                addMessage("🚨 Alerting staff immediately...", 'bot');
+                fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "notify", message: "GUEST REPORTED AN EMERGENCY VIA CHAT APP" })
+                });
+            }
+        }
+    </script>
+</body>
+</html>
