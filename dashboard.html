@@ -10,15 +10,21 @@
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; color: var(--text); }
         
         /* SIDEBAR */
-        .sidebar { width: 260px; background: var(--primary); color: white; display: flex; flex-direction: column; flex-shrink: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.1); z-index: 2; }
-        .brand { padding: 30px; font-size: 24px; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1); letter-spacing: 1px; }
-        .brand span { color: var(--accent); }
+        .sidebar { width: 260px; background: var(--primary); color: white; display: flex; flex-direction: column; flex-shrink: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.1); z-index: 2; position: relative; }
+        
+        .brand { padding: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
+        .logo-img { height: 35px; width: auto; border-radius: 4px; }
+        .brand-text { font-size: 20px; font-weight: 800; letter-spacing: 1px; }
+        .brand-text span { color: var(--accent); }
         
         .menu { flex: 1; padding: 20px 0; display: flex; flex-direction: column; gap: 5px; }
         .menu-item { padding: 15px 30px; cursor: pointer; display: flex; align-items: center; gap: 15px; font-size: 15px; color: #cfd8dc; transition: 0.2s; border-left: 4px solid transparent; }
         .menu-item:hover { background: rgba(255,255,255,0.05); color: white; }
         .menu-item.active { background: rgba(255,255,255,0.1); border-left-color: var(--accent); color: white; font-weight: 600; }
-        
+
+        .sidebar-footer { padding: 20px; font-size: 0.75rem; color: rgba(255,255,255,0.4); text-align: center; border-top: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-footer i { color: #4285F4; }
+
         /* MAIN AREA */
         .main { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
@@ -34,28 +40,28 @@
         .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
         
         .card-status-bar { height: 6px; width: 100%; background: #bdc3c7; }
-        .card.urgent .card-status-bar { background: #e74c3c; } /* Red */
-        .card.pending .card-status-bar { background: #f39c12; } /* Orange */
-        .card.done .card-status-bar { background: #27ae60; }   /* Green */
+        .card.urgent .card-status-bar { background: #e74c3c; } 
+        .card.pending .card-status-bar { background: #f39c12; } 
+        .card.done .card-status-bar { background: #27ae60; }   
 
         .card-body { padding: 20px; }
-        
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: #7f8c8d; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; }
-        
         .main-info { font-size: 1.25rem; font-weight: 700; color: #2c3e50; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
         .sub-info { font-size: 0.95rem; color: #555; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
         .meta-info { font-size: 0.9rem; color: #777; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #eee; font-style: italic; line-height: 1.4; }
-        
         .icon-box { color: var(--accent); width: 20px; text-align: center; }
-
-        /* LOADER */
         .loader { display: none; text-align: center; padding: 50px; color: #bdc3c7; font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="brand">ZAR <span>HOTEL</span></div>
+        <div class="brand">
+            <!-- UPDATED LOGO SOURCE -->
+            <img src="./hotel.jpeg" alt="Logo" class="logo-img">
+            <div class="brand-text">ZAR <span>HOTEL</span></div>
+        </div>
+        
         <div class="menu">
             <div class="menu-item active" onclick="loadTab('RESTAURANT RESERVATIONS', 'Dining Bookings')">
                 <i class="fas fa-utensils"></i> <span>Dining</span>
@@ -72,6 +78,10 @@
             <div class="menu-item" onclick="loadTab('CHAT LOG', 'Live Chat Logs')">
                 <i class="fas fa-comments"></i> <span>Chat History</span>
             </div>
+        </div>
+
+        <div class="sidebar-footer">
+            Powered by <i class="fas fa-bolt"></i> <strong>Gemini 2.0 Flash</strong>
         </div>
     </div>
 
@@ -133,17 +143,11 @@
             const dataRows = rows.slice(1).reverse();
 
             dataRows.forEach(row => {
-                let statusClass = 'pending'; // Default color (Orange)
-                
-                // Helper to format date
+                let statusClass = 'pending'; 
                 let dateStr = row[0] ? new Date(row[0]).toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) : "N/A";
-
                 let bodyHtml = '';
 
-                // --- RENDERING LOGIC PER TAB --- //
-
                 if (currentTab === 'RESTAURANT RESERVATIONS') {
-                    // Headers: Timestamp, Name, Phone, Pax, Time, Discord, Email, Request
                     bodyHtml = `
                         <div class="main-info"><i class="fas fa-user icon-box"></i> ${row[1]} <span style="font-size:0.8em; color:#777;">(${row[3]} ppl)</span></div>
                         <div class="sub-info"><i class="far fa-clock icon-box"></i> <strong>Time:</strong> ${row[4]}</div>
@@ -152,7 +156,6 @@
                     `;
                 } 
                 else if (currentTab === 'HOUSEKEEPING') {
-                    // Headers: Timestamp, Room, GuestName, Request, Discord
                     bodyHtml = `
                         <div class="main-info"><i class="fas fa-door-closed icon-box"></i> Room ${row[1]}</div>
                         <div class="sub-info"><i class="fas fa-user icon-box"></i> ${row[2]}</div>
@@ -160,9 +163,7 @@
                     `;
                 }
                 else if (currentTab === 'MAINTENANCE') {
-                    // Headers: Timestamp, GuestName, Room, Issue, Status
                     if(row[4] && row[4].toLowerCase().includes('urgent')) statusClass = 'urgent';
-                    
                     bodyHtml = `
                         <div class="main-info"><i class="fas fa-tools icon-box"></i> Room ${row[2]}</div>
                         <div class="sub-info"><i class="fas fa-user icon-box"></i> Reported by: ${row[1]}</div>
@@ -170,7 +171,6 @@
                     `;
                 }
                 else if (currentTab === 'HOTEL RESERVATIONS') {
-                    // Headers: Timestamp, Name, Phone, Email, ID, Pax, CheckIn, Nights, Request
                     bodyHtml = `
                         <div class="main-info"><i class="fas fa-suitcase icon-box"></i> ${row[1]}</div>
                         <div class="sub-info"><i class="far fa-calendar-alt icon-box"></i> Check-in: ${row[6]} (${row[7]} nights)</div>
@@ -179,12 +179,10 @@
                     `;
                 }
                 else if (currentTab === 'CHAT LOG') {
-                    // Headers: Timestamp, Chat History
-                    statusClass = 'done'; // Green
+                    statusClass = 'done'; 
                     bodyHtml = `<div class="meta-info" style="font-style:normal; white-space: pre-wrap;">${row[1]}</div>`;
                 }
 
-                // Final Card Assembly
                 const card = `
                     <div class="card ${statusClass}">
                         <div class="card-status-bar"></div>
