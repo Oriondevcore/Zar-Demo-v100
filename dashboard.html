@@ -9,57 +9,25 @@
         :root { --primary: #2c3e50; --accent: #e67e22; --bg: #f4f6f9; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* SIDEBAR */
         .sidebar { width: 260px; background: var(--primary); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
-        .brand { padding: 25px; font-size: 22px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); letter-spacing: 1px; }
+        .brand { padding: 25px; font-size: 22px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .brand span { color: var(--accent); }
-        
         .menu { flex: 1; padding-top: 20px; display: flex; flex-direction: column; gap: 5px; }
-        .menu-item { padding: 15px 25px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; font-size: 15px; color: #b0bec5; }
+        .menu-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 15px; color: #b0bec5; }
         .menu-item:hover { background: rgba(255,255,255,0.05); color: white; }
         .menu-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--accent); color: white; }
         
-        /* MAIN CONTENT */
         .main { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
-        
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        h2 { color: #333; margin: 0; font-weight: 600; }
+        .refresh-btn { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
         
-        .refresh-btn { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .refresh-btn:hover { background: #d35400; }
-        .refresh-btn i { font-size: 0.9rem; }
-
-        /* DATA GRID */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-left: 4px solid transparent; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
-        
-        /* Status Colors */
-        .card.pending { border-left-color: #f39c12; }
-        .card.urgent { border-left-color: #e74c3c; }
-        .card.confirmed { border-left-color: #27ae60; }
-
-        .card-header { display: flex; justify-content: space-between; margin-bottom: 12px; color: #888; font-size: 0.85em; font-weight: 500; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .card-header { display: flex; justify-content: space-between; margin-bottom: 12px; color: #888; font-size: 0.85em; }
         .data-value { font-size: 1.1em; font-weight: 700; color: #2c3e50; margin-bottom: 5px; }
-        .data-sub { color: #555; font-size: 0.95em; margin-bottom: 3px; }
+        .data-sub { color: #555; font-size: 0.95em; }
         .data-meta { color: #999; font-size: 0.85em; margin-top: 8px; font-style: italic; }
-
-        .tag { padding: 3px 8px; border-radius: 4px; font-size: 0.75em; text-transform: uppercase; font-weight: bold; }
-        .tag.urgent { background: #ffebee; color: #c62828; }
-        .tag.pending { background: #fff3e0; color: #ef6c00; }
-        .tag.confirmed { background: #e8f5e9; color: #2e7d32; }
-
-        /* LOADER */
         .loader { display: none; text-align: center; padding: 40px; color: #777; }
-        .fa-spin { margin-right: 8px; }
-
-        @media (max-width: 768px) {
-            .sidebar { width: 70px; }
-            .brand span, .menu-item span { display: none; } /* Icons only on mobile */
-            .menu-item { justify-content: center; padding: 15px; }
-            .brand { padding: 15px; text-align: center; font-size: 18px; }
-        }
     </style>
 </head>
 <body>
@@ -79,9 +47,6 @@
             <div class="menu-item" onclick="loadTab('HOTEL RESERVATIONS', 'Room Leads')">
                 <i class="fas fa-bed"></i> <span>Room Leads</span>
             </div>
-            <div class="menu-item" onclick="loadTab('CHAT LOG', 'Chat History')">
-                <i class="fas fa-comments"></i> <span>Chat Logs</span>
-            </div>
         </div>
     </div>
 
@@ -91,16 +56,12 @@
             <button class="refresh-btn" onclick="fetchData()"><i class="fas fa-sync-alt"></i> Refresh</button>
         </header>
 
-        <div class="loader" id="loader"><i class="fas fa-circle-notch fa-spin"></i> Fetching live data...</div>
-        
-        <div class="grid" id="data-grid">
-            </div>
+        <div class="loader" id="loader"><i class="fas fa-circle-notch fa-spin"></i> Loading...</div>
+        <div class="grid" id="data-grid"></div>
     </div>
 
     <script>
-        // ----------------------------------------------------
-        // ⚙️ CONFIGURATION
-        // ----------------------------------------------------
+        // PASTE YOUR WEB APP URL HERE
         const API_URL = "https://script.google.com/macros/s/AKfycbwFIRNeSUkKCcuv9oN2p0CbXXoqvNbNWHbjuJ1Ef9wdRI0rFzFMjQWOuZWd6_LpcR4b/exec";
         
         let currentTab = 'RESTAURANT RESERVATIONS';
@@ -108,11 +69,8 @@
         function loadTab(tabName, title) {
             currentTab = tabName;
             document.getElementById('page-title').innerText = title;
-            
-            // UI Toggle Active
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
             event.currentTarget.classList.add('active');
-            
             fetchData();
         }
 
@@ -124,7 +82,6 @@
             loader.style.display = 'block';
 
             try {
-                // Fetch from Apps Script
                 const response = await fetch(API_URL, {
                     method: "POST",
                     body: JSON.stringify({ action: "fetch_data", tab: currentTab })
@@ -133,12 +90,9 @@
                 
                 if(json.status === 'success') {
                     renderData(json.data);
-                } else {
-                    grid.innerHTML = `<p style="color:red">Error: ${json.message}</p>`;
                 }
-
             } catch (error) {
-                grid.innerHTML = '<p style="color:red">Failed to connect to ZAR System.</p>';
+                grid.innerHTML = '<p>Connection Error.</p>';
             } finally {
                 loader.style.display = 'none';
             }
@@ -146,59 +100,50 @@
 
         function renderData(rows) {
             const grid = document.getElementById('data-grid');
-            
             if (!rows || rows.length < 2) {
-                grid.innerHTML = '<p style="color:#666; font-style:italic;">No records found in this category.</p>';
+                grid.innerHTML = '<p>No records found.</p>';
                 return;
             }
 
-            // Headers are row 0. Data starts row 1.
-            // We reverse to show newest first.
             const dataRows = rows.slice(1).reverse();
 
             dataRows.forEach(row => {
-                // Determine Status (Last Column usually)
-                const status = row[row.length - 1] ? row[row.length - 1].toString() : 'Unknown';
-                const statusClass = getStatusClass(status);
+                let html = `<div class="card">`;
+                let dateStr = row[0] ? new Date(row[0]).toLocaleString() : "Unknown Date";
 
-                // Build Card HTML
-                let html = `<div class="card ${statusClass}">`;
-                
-                // Timestamp (Column 0)
-                let dateStr = row[0];
-                try { dateStr = new Date(row[0]).toLocaleString(); } catch(e){}
+                html += `<div class="card-header"><span><i class="far fa-clock"></i> ${dateStr}</span></div>`;
 
-                html += `<div class="card-header">
-                            <span><i class="far fa-clock"></i> ${dateStr}</span>
-                            <span class="tag ${statusClass}">${status}</span>
-                         </div>`;
-                
-                // Content Logic based on Tab
-                if (currentTab === 'CHAT LOG') {
-                    // Chat Log: [Date, Speaker, Message]
-                    html += `<div class="data-value">${row[1]}</div>`; // Speaker
-                    html += `<div class="data-sub">"${row[2]}"</div>`; // Message
-                } else {
-                    // Standard Request: [Date, MainInfo, Details, Extra, Status]
-                    html += `<div class="data-value">${row[1] || ''}</div>`; // Room / Name
-                    if(row[2]) html += `<div class="data-sub">${row[2]}</div>`; // Details
-                    if(row[3] && row[3] !== status) html += `<div class="data-meta">${row[3]}</div>`; // Extra
+                // CUSTOM RENDERING PER TAB BASED ON CSV HEADERS
+                if (currentTab === 'RESTAURANT RESERVATIONS') {
+                    // [Timestamp, Name, Phone, Pax, Time, Discord, Email, Request]
+                    html += `<div class="data-value">${row[1]} (${row[3]} ppl)</div>`;
+                    html += `<div class="data-sub">Time: ${row[4]} | Phone: ${row[2]}</div>`;
+                    if(row[7]) html += `<div class="data-meta">Request: ${row[7]}</div>`;
+                } 
+                else if (currentTab === 'HOUSEKEEPING') {
+                    // [Timestamp, Room, GuestName, Request, Discord]
+                    html += `<div class="data-value">Room ${row[1]}</div>`;
+                    html += `<div class="data-sub">${row[3]}</div>`;
+                    html += `<div class="data-meta">Guest: ${row[2]}</div>`;
                 }
-                
+                else if (currentTab === 'MAINTENANCE') {
+                    // [Timestamp, GuestName, Room, Issue, Status]
+                    html += `<div class="data-value">Room ${row[2]}</div>`;
+                    html += `<div class="data-sub">${row[3]}</div>`;
+                    html += `<div class="data-meta">Rep: ${row[1]} | Status: ${row[4]}</div>`;
+                }
+                else if (currentTab === 'HOTEL RESERVATIONS') {
+                    // [Timestamp, Name, Phone, Email, ID, Pax, CheckIn, Nights, Request]
+                    html += `<div class="data-value">${row[1]}</div>`;
+                    html += `<div class="data-sub">Check-in: ${row[6]} (${row[7]} nights)</div>`;
+                    html += `<div class="data-meta">Pax: ${row[5]} | Contact: ${row[2]}</div>`;
+                }
+
                 html += `</div>`;
                 grid.innerHTML += html;
             });
         }
 
-        function getStatusClass(status) {
-            const s = status.toLowerCase();
-            if(s.includes('urgent') || s.includes('emergency')) return 'urgent';
-            if(s.includes('pending')) return 'pending';
-            if(s.includes('confirmed') || s.includes('done') || s.includes('bot')) return 'confirmed';
-            return '';
-        }
-
-        // Init Load
         fetchData();
     </script>
 </body>
