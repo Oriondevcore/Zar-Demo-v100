@@ -4,30 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZAR Hotel | Manager Dashboard</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root { --primary: #2c3e50; --accent: #e67e22; --bg: #f4f6f9; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        :root { --primary: #2c3e50; --accent: #e67e22; --bg: #f4f7f6; --text: #333; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; color: var(--text); }
         
-        .sidebar { width: 260px; background: var(--primary); color: white; display: flex; flex-direction: column; flex-shrink: 0; }
-        .brand { padding: 25px; font-size: 22px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        /* SIDEBAR */
+        .sidebar { width: 260px; background: var(--primary); color: white; display: flex; flex-direction: column; flex-shrink: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.1); z-index: 2; }
+        .brand { padding: 30px; font-size: 24px; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1); letter-spacing: 1px; }
         .brand span { color: var(--accent); }
-        .menu { flex: 1; padding-top: 20px; display: flex; flex-direction: column; gap: 5px; }
-        .menu-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 15px; color: #b0bec5; }
+        
+        .menu { flex: 1; padding: 20px 0; display: flex; flex-direction: column; gap: 5px; }
+        .menu-item { padding: 15px 30px; cursor: pointer; display: flex; align-items: center; gap: 15px; font-size: 15px; color: #cfd8dc; transition: 0.2s; border-left: 4px solid transparent; }
         .menu-item:hover { background: rgba(255,255,255,0.05); color: white; }
-        .menu-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--accent); color: white; }
+        .menu-item.active { background: rgba(255,255,255,0.1); border-left-color: var(--accent); color: white; font-weight: 600; }
         
-        .main { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .refresh-btn { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+        /* MAIN AREA */
+        .main { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        h2 { font-size: 28px; font-weight: 700; color: #2c3e50; margin: 0; }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-        .card-header { display: flex; justify-content: space-between; margin-bottom: 12px; color: #888; font-size: 0.85em; }
-        .data-value { font-size: 1.1em; font-weight: 700; color: #2c3e50; margin-bottom: 5px; }
-        .data-sub { color: #555; font-size: 0.95em; }
-        .data-meta { color: #999; font-size: 0.85em; margin-top: 8px; font-style: italic; }
-        .loader { display: none; text-align: center; padding: 40px; color: #777; }
+        .refresh-btn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; box-shadow: 0 4px 6px rgba(230, 126, 34, 0.2); transition: 0.2s; display: flex; align-items: center; gap: 8px; }
+        .refresh-btn:hover { background: #d35400; transform: translateY(-1px); }
+
+        /* GRID & CARDS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
+        
+        .card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden; position: relative; border: 1px solid #eee; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        
+        .card-status-bar { height: 6px; width: 100%; background: #bdc3c7; }
+        .card.urgent .card-status-bar { background: #e74c3c; } /* Red */
+        .card.pending .card-status-bar { background: #f39c12; } /* Orange */
+        .card.done .card-status-bar { background: #27ae60; }   /* Green */
+
+        .card-body { padding: 20px; }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: #7f8c8d; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; }
+        
+        .main-info { font-size: 1.25rem; font-weight: 700; color: #2c3e50; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+        .sub-info { font-size: 0.95rem; color: #555; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+        .meta-info { font-size: 0.9rem; color: #777; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #eee; font-style: italic; line-height: 1.4; }
+        
+        .icon-box { color: var(--accent); width: 20px; text-align: center; }
+
+        /* LOADER */
+        .loader { display: none; text-align: center; padding: 50px; color: #bdc3c7; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -41,11 +63,14 @@
             <div class="menu-item" onclick="loadTab('HOUSEKEEPING', 'Housekeeping')">
                 <i class="fas fa-broom"></i> <span>Housekeeping</span>
             </div>
-            <div class="menu-item" onclick="loadTab('MAINTENANCE', 'Maintenance Log')">
+            <div class="menu-item" onclick="loadTab('MAINTENANCE', 'Maintenance')">
                 <i class="fas fa-tools"></i> <span>Maintenance</span>
             </div>
             <div class="menu-item" onclick="loadTab('HOTEL RESERVATIONS', 'Room Leads')">
                 <i class="fas fa-bed"></i> <span>Room Leads</span>
+            </div>
+            <div class="menu-item" onclick="loadTab('CHAT LOG', 'Live Chat Logs')">
+                <i class="fas fa-comments"></i> <span>Chat History</span>
             </div>
         </div>
     </div>
@@ -53,10 +78,10 @@
     <div class="main">
         <header>
             <h2 id="page-title">Dining Bookings</h2>
-            <button class="refresh-btn" onclick="fetchData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+            <button class="refresh-btn" onclick="fetchData()"><i class="fas fa-sync-alt"></i> Refresh Data</button>
         </header>
 
-        <div class="loader" id="loader"><i class="fas fa-circle-notch fa-spin"></i> Loading...</div>
+        <div class="loader" id="loader"><i class="fas fa-circle-notch fa-spin"></i> Fetching live updates...</div>
         <div class="grid" id="data-grid"></div>
     </div>
 
@@ -92,7 +117,7 @@
                     renderData(json.data);
                 }
             } catch (error) {
-                grid.innerHTML = '<p>Connection Error.</p>';
+                grid.innerHTML = '<p style="color:red">Failed to connect to system.</p>';
             } finally {
                 loader.style.display = 'none';
             }
@@ -101,46 +126,78 @@
         function renderData(rows) {
             const grid = document.getElementById('data-grid');
             if (!rows || rows.length < 2) {
-                grid.innerHTML = '<p>No records found.</p>';
+                grid.innerHTML = '<p style="color:#888; font-style:italic;">No active tickets found.</p>';
                 return;
             }
 
             const dataRows = rows.slice(1).reverse();
 
             dataRows.forEach(row => {
-                let html = `<div class="card">`;
-                let dateStr = row[0] ? new Date(row[0]).toLocaleString() : "Unknown Date";
+                let statusClass = 'pending'; // Default color (Orange)
+                
+                // Helper to format date
+                let dateStr = row[0] ? new Date(row[0]).toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) : "N/A";
 
-                html += `<div class="card-header"><span><i class="far fa-clock"></i> ${dateStr}</span></div>`;
+                let bodyHtml = '';
 
-                // CUSTOM RENDERING PER TAB BASED ON CSV HEADERS
+                // --- RENDERING LOGIC PER TAB --- //
+
                 if (currentTab === 'RESTAURANT RESERVATIONS') {
-                    // [Timestamp, Name, Phone, Pax, Time, Discord, Email, Request]
-                    html += `<div class="data-value">${row[1]} (${row[3]} ppl)</div>`;
-                    html += `<div class="data-sub">Time: ${row[4]} | Phone: ${row[2]}</div>`;
-                    if(row[7]) html += `<div class="data-meta">Request: ${row[7]}</div>`;
+                    // Headers: Timestamp, Name, Phone, Pax, Time, Discord, Email, Request
+                    bodyHtml = `
+                        <div class="main-info"><i class="fas fa-user icon-box"></i> ${row[1]} <span style="font-size:0.8em; color:#777;">(${row[3]} ppl)</span></div>
+                        <div class="sub-info"><i class="far fa-clock icon-box"></i> <strong>Time:</strong> ${row[4]}</div>
+                        <div class="sub-info"><i class="fas fa-phone icon-box"></i> ${row[2]}</div>
+                        ${row[7] ? `<div class="meta-info">"${row[7]}"</div>` : ''}
+                    `;
                 } 
                 else if (currentTab === 'HOUSEKEEPING') {
-                    // [Timestamp, Room, GuestName, Request, Discord]
-                    html += `<div class="data-value">Room ${row[1]}</div>`;
-                    html += `<div class="data-sub">${row[3]}</div>`;
-                    html += `<div class="data-meta">Guest: ${row[2]}</div>`;
+                    // Headers: Timestamp, Room, GuestName, Request, Discord
+                    bodyHtml = `
+                        <div class="main-info"><i class="fas fa-door-closed icon-box"></i> Room ${row[1]}</div>
+                        <div class="sub-info"><i class="fas fa-user icon-box"></i> ${row[2]}</div>
+                        <div class="meta-info"><strong style="color:#e67e22">Request:</strong> ${row[3]}</div>
+                    `;
                 }
                 else if (currentTab === 'MAINTENANCE') {
-                    // [Timestamp, GuestName, Room, Issue, Status]
-                    html += `<div class="data-value">Room ${row[2]}</div>`;
-                    html += `<div class="data-sub">${row[3]}</div>`;
-                    html += `<div class="data-meta">Rep: ${row[1]} | Status: ${row[4]}</div>`;
+                    // Headers: Timestamp, GuestName, Room, Issue, Status
+                    if(row[4] && row[4].toLowerCase().includes('urgent')) statusClass = 'urgent';
+                    
+                    bodyHtml = `
+                        <div class="main-info"><i class="fas fa-tools icon-box"></i> Room ${row[2]}</div>
+                        <div class="sub-info"><i class="fas fa-user icon-box"></i> Reported by: ${row[1]}</div>
+                        <div class="meta-info"><strong style="color:#c0392b">Issue:</strong> ${row[3]}</div>
+                    `;
                 }
                 else if (currentTab === 'HOTEL RESERVATIONS') {
-                    // [Timestamp, Name, Phone, Email, ID, Pax, CheckIn, Nights, Request]
-                    html += `<div class="data-value">${row[1]}</div>`;
-                    html += `<div class="data-sub">Check-in: ${row[6]} (${row[7]} nights)</div>`;
-                    html += `<div class="data-meta">Pax: ${row[5]} | Contact: ${row[2]}</div>`;
+                    // Headers: Timestamp, Name, Phone, Email, ID, Pax, CheckIn, Nights, Request
+                    bodyHtml = `
+                        <div class="main-info"><i class="fas fa-suitcase icon-box"></i> ${row[1]}</div>
+                        <div class="sub-info"><i class="far fa-calendar-alt icon-box"></i> Check-in: ${row[6]} (${row[7]} nights)</div>
+                        <div class="sub-info"><i class="fas fa-phone icon-box"></i> ${row[2]}</div>
+                        <div class="meta-info">Pax: ${row[5]} | Email: ${row[3]}</div>
+                    `;
+                }
+                else if (currentTab === 'CHAT LOG') {
+                    // Headers: Timestamp, Chat History
+                    statusClass = 'done'; // Green
+                    bodyHtml = `<div class="meta-info" style="font-style:normal; white-space: pre-wrap;">${row[1]}</div>`;
                 }
 
-                html += `</div>`;
-                grid.innerHTML += html;
+                // Final Card Assembly
+                const card = `
+                    <div class="card ${statusClass}">
+                        <div class="card-status-bar"></div>
+                        <div class="card-body">
+                            <div class="card-header">
+                                <span>Ticket #${Math.floor(Math.random()*1000)}</span>
+                                <span>${dateStr}</span>
+                            </div>
+                            ${bodyHtml}
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
             });
         }
 
