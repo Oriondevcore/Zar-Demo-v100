@@ -6,43 +6,27 @@
     <title>ZAR Hotel Concierge</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- ZAR HOTEL BRANDING --- */
-        :root {
-            --primary: #2c3e50; 
-            --accent: #e67e22;  
-            --bg: #f4f4f9;
-            --chat-bot-bg: #ffffff;
-            --chat-user-bg: #2c3e50;
-        }
-
+        :root { --primary: #2c3e50; --accent: #e67e22; --bg: #f4f4f9; --chat-bot-bg: #ffffff; --chat-user-bg: #2c3e50; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* HEADER WITH LOGO */
         header { background: var(--primary); color: white; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10; }
-        
         .brand-area { display: flex; align-items: center; gap: 15px; }
         .logo-img { height: 45px; width: auto; border-radius: 6px; background: white; padding: 2px; } 
-        .brand-text h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; line-height: 1.2; font-weight: 700; }
+        .brand-text h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; font-weight: 700; }
         .brand-text span { color: var(--accent); }
-        .brand-text small { display: block; font-size: 0.7rem; color: #bdc3c7; font-weight: normal; letter-spacing: 0; }
+        .brand-text small { display: block; font-size: 0.7rem; color: #bdc3c7; letter-spacing: 0; }
 
-        /* CHAT AREA */
         #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; position: relative; }
-        
         .message { max-width: 80%; padding: 12px 18px; border-radius: 18px; line-height: 1.5; font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; }
         .user { align-self: flex-end; background: var(--chat-user-bg); color: white; border-bottom-right-radius: 4px; }
         .bot { align-self: flex-start; background: var(--chat-bot-bg); color: #333; border-bottom-left-radius: 4px; border: 1px solid #e0e0e0; }
-        
         .bot a { color: var(--accent); font-weight: bold; text-decoration: none; border-bottom: 1px dotted var(--accent); }
-        
-        /* GEMINI BADGE */
-        .gemini-badge { text-align: center; font-size: 11px; color: #7f8c8d; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: 500; }
-        .gemini-badge i { color: #4285F4; } /* Google Blue */
 
-        /* TYPING INDICATOR */
+        .gemini-badge { text-align: center; font-size: 11px; color: #7f8c8d; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: 500; }
+        .gemini-badge i { color: #4285F4; } 
+
         .typing-indicator { display: none; align-self: flex-start; background: #fff; padding: 10px 15px; border-radius: 18px; border-bottom-left-radius: 4px; color: #aaa; font-size: 0.8rem; font-style: italic; }
 
-        /* QUICK BUTTONS */
         #quick-buttons { padding: 12px; display: flex; gap: 10px; overflow-x: auto; background: #fff; border-top: 1px solid #eee; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         #quick-buttons::-webkit-scrollbar { display: none; }
         
@@ -50,7 +34,6 @@
         .q-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
         .q-btn.emergency { background: #fee2e2; color: #dc2626; border-color: #fca5a5; font-weight: bold; }
 
-        /* INPUT AREA */
         #input-wrapper { background: white; border-top: 1px solid #ddd; padding-bottom: 8px; }
         #input-area { display: flex; padding: 10px 15px; align-items: center; gap: 10px; }
         input { flex: 1; padding: 14px; border-radius: 25px; border: 1px solid #ccc; outline: none; font-size: 16px; background: #f9f9f9; transition: 0.3s; }
@@ -79,7 +62,6 @@
         .modal-btn-group { display: flex; gap: 10px; margin-top: 10px; }
         .btn-cancel { flex: 1; padding: 12px; border: none; background: #eee; color: #555; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-alert { flex: 2; padding: 12px; border: none; background: #e74c3c; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-alert:active { transform: scale(0.98); }
 
     </style>
 </head>
@@ -87,7 +69,6 @@
 
     <header>
         <div class="brand-area">
-            <!-- UPDATED LOGO SOURCE -->
             <img src="./hotel.jpeg" alt="Logo" class="logo-img">
             <div class="brand-text">
                 <h1>ZAR <span>CONCIERGE</span></h1>
@@ -98,7 +79,7 @@
 
     <div id="chat-container">
         <div class="message bot">
-            Hello! Welcome to ZAR Hotel. I can assist you with housekeeping, room service, or local tips.<br><br>
+            Sawubona! Welcome to ZAR Hotel. I speak 18 languages and can assist with bookings, dining, or housekeeping.<br><br>
             How can I help you today?
         </div>
     </div>
@@ -113,7 +94,7 @@
         <button class="q-btn" onclick="sendQuick('What time is check out?')"><i class="far fa-clock"></i> Check-out</button>
         <button class="q-btn" onclick="sendQuick('I want to book a table at Monkey Man')"><i class="fas fa-hamburger"></i> Dining</button>
         <button class="q-btn" onclick="sendQuick('I would like to request housekeeping services.')"><i class="fas fa-broom"></i> Housekeeping</button>
-        <button class="q-btn" onclick="openWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+        <button class="q-btn" onclick="sendQuick('I would like to book a room')"><i class="fas fa-bed"></i> Book a Room</button>
         <button class="q-btn emergency" onclick="openEmergencyModal()"><i class="fas fa-exclamation-triangle"></i> EMERGENCY</button>
     </div>
 
@@ -151,7 +132,6 @@
     <script>
         // PASTE YOUR DEPLOYED WEB APP URL HERE
         const API_URL = "https://script.google.com/macros/s/AKfycbwFIRNeSUkKCcuv9oN2p0CbXXoqvNbNWHbjuJ1Ef9wdRI0rFzFMjQWOuZWd6_LpcR4b/exec";
-        const WHATSAPP_NUM = "27310010788";
 
         let chatHistory = ""; 
 
@@ -236,11 +216,6 @@
             const saVoice = window.speechSynthesis.getVoices().find(v => v.lang === 'en-GB');
             if (saVoice) utterance.voice = saVoice;
             window.speechSynthesis.speak(utterance);
-        }
-
-        // --- WHATSAPP ---
-        function openWhatsApp() {
-            window.open(`https://wa.me/${WHATSAPP_NUM}?text=Hi%20ZAR%20Hotel,%20I%20have%20a%20question...`, '_blank');
         }
 
         // --- EMERGENCY MODAL ---
