@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZAR Hotel | Manager Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #2c3e50; --accent: #e67e22; --bg: #f4f6f9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; }
+        
+        /* SIDEBAR */
+        .sidebar { width: 250px; background: var(--primary); color: white; display: flex; flex-direction: column; }
+        .brand { padding: 20px; font-size: 24px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .brand span { color: var(--accent); }
+        .menu { flex: 1; padding-top: 20px; }
+        .menu-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+        .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--accent); }
+        
+        /* MAIN CONTENT */
+        .main { flex: 1; padding: 30px; overflow-y: auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        h2 { color: #333; margin: 0; }
+        .refresh-btn { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+
+        /* DATA CARDS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .card-header { display: flex; justify-content: space-between; margin-bottom: 15px; color: #777; font-size: 0.9em; }
+        .data-value { font-size: 1.2em; font-weight: bold; color: #333; }
+        .tag { padding: 4px 8px; border-radius: 4px; font-size: 0.8em; text-transform: uppercase; }
+        .tag.urgent { background: #fee2e2; color: #dc2626; }
+        .tag.pending { background: #fef3c7; color: #d97706; }
+        .tag.confirmed { background: #dcfce7; color: #16a34a; }
+
+        /* LOADING */
+        .loader { display: none; text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="brand">ZAR <span>HOTEL</span></div>
+        <div class="menu">
+            <div class="menu-item active" onclick="loadTab('RESTAURANT RESERVATIONS', 'Dinner Bookings')">
+                <i class="fas fa-utensils"></i> Dining
+            </div>
+            <div class="menu-item" onclick="loadTab('HOUSEKEEPING', 'Housekeeping Requests')">
+                <i class="fas fa-broom"></i> Housekeeping
+            </div>
+            <div class="menu-item" onclick="loadTab('MAINTENANCE', 'Maintenance Log')">
+                <i class="fas fa-tools"></i> Maintenance
+            </div>
+            <div class="menu-item" onclick="loadTab('HOTEL RESERVATIONS', 'Room Leads')">
+                <i class="fas fa-bed"></i> Room Leads
+            </div>
+            <div class="menu-item" onclick="loadTab('CHAT LOG', 'Live Chat History')">
+                <i class="fas fa-comments"></i> Chat Logs
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+        <header>
+            <h2 id="page-title">Dinner Bookings</h2>
+            <button class="refresh-btn" onclick="fetchData()"><i class="fas fa-sync"></i> Refresh Data</button>
+        </header>
+
+        <div class="loader" id="loader">Loading live data...</div>
+        <div class="grid" id="data-grid">
+            </div>
+    </div>
+
+    <script>
+        // PASTE YOUR DEPLOYED WEB APP URL HERE
+        const API_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+        
+        let currentTab = 'RESTAURANT RESERVATIONS';
+
+        function loadTab(tabName, title) {
+            currentTab = tabName;
+            document.getElementById('page-title').innerText = title;
+            
+            // Update Menu Active State
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            fetchData();
+        }
+
+        async function fetchData() {
+            const grid = document.getElementById('data-grid');
+            const loader = document.getElementById('loader');
+            
+            grid.innerHTML = '';
+            loader.style.display = 'block';
+
+            try {
+                // Fetch data from Google Sheets via Apps Script
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "fetch_data", tab: currentTab })
+                });
+                const json = await response.json();
+                
+                renderData(json.data);
+            } catch (error) {
+                grid.innerHTML = '<p>Error loading data. Check API URL.</p>';
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        function renderData(rows) {
+            const grid = document.getElementById('data-grid');
+            if (!rows || rows.length < 2) {
+                grid.innerHTML = '<p>No records found.</p>';
+                return;
+            }
+
+            // Skip Header (Index 0), Reverse to show newest first
+            const headers = rows[0];
+            const dataRows = rows.slice(1).reverse();
+
+            dataRows.forEach(row => {
+                let html = `<div class="card">`;
+                
+                // Timestamp
+                html += `<div class="card-header">
+                            <span><i class="far fa-clock"></i> ${new Date(row[0]).toLocaleString()}</span>
+                            <span class="tag ${getStatusColor(row[row.length-1])}">${row[row.length-1]}</span>
+                         </div>`;
+                
+                // Body Data
+                html += `<div class="data-value">${row[1]}</div>`; // Main value (Name/Room)
+                if(row[2]) html += `<div style="color:#666; margin-top:5px;">${row[2]}</div>`; // Secondary info
+                if(row[3]) html += `<div style="color:#888; font-size:0.9em;">${row[3]}</div>`; // Extra info
+                
+                html += `</div>`;
+                grid.innerHTML += html;
+            });
+        }
+
+        function getStatusColor(status) {
+            if(!status) return '';
+            status = status.toString().toLowerCase();
+            if(status.includes('pending')) return 'pending';
+            if(status.includes('urgent') || status.includes('emergency')) return 'urgent';
+            if(status.includes('confirmed') || status.includes('done')) return 'confirmed';
+            return '';
+        }
+
+        // Load default tab
+        fetchData();
+    </script>
+</body>
+</html>
