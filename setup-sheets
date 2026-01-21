@@ -1,0 +1,64 @@
+function setupZARDatabase() {
+  // 1. Create the Spreadsheet
+  const ss = SpreadsheetApp.create("ZAR Hotel Database v2.0 (Official)");
+  const url = ss.getUrl();
+  const id = ss.getId();
+  
+  // 2. Define Tabs and Correct Headers (Spelling Fixed)
+  const structures = {
+    "INFO": ["Category", "Topic", "Details"],
+    "CHAT LOG": ["Timestamp", "Chat History"],
+    "MAINTENANCE": ["Timestamp", "Guest Name", "Room Number", "Issue", "Status"],
+    "RESTAURANT RESERVATIONS": ["Timestamp", "Name", "Phone", "Pax", "Booking Time", "Discord Sent", "Email", "Special Requests"],
+    "HOTEL RESERVATIONS": ["Timestamp", "Name", "Phone", "Email", "ID Number", "Pax", "Check-in Date", "Nights", "Special Requests"],
+    "HOUSEKEEPING": ["Timestamp", "Room Number", "Guest Name", "Request", "Discord Notification"]
+  };
+
+  // 3. Loop through and create tabs
+  for (const [tabName, headers] of Object.entries(structures)) {
+    let sheet = ss.getSheetByName(tabName);
+    if (!sheet) {
+      sheet = ss.insertSheet(tabName);
+    }
+    // Clear any existing content and set headers
+    sheet.clear();
+    sheet.appendRow(headers);
+    
+    // Format Headers (Bold, Grey Background, Freeze Top Row)
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setFontWeight("bold").setBackground("#e0e0e0");
+    sheet.setFrozenRows(1);
+    
+    // Auto-resize columns for clarity
+    sheet.autoResizeColumns(1, headers.length);
+  }
+
+  // 4. Remove default "Sheet1" if it exists
+  const defaultSheet = ss.getSheetByName("Sheet1");
+  if (defaultSheet) {
+    ss.deleteSheet(defaultSheet);
+  }
+
+  // 5. Add Starter Data to INFO tab (So the bot isn't empty)
+  const infoSheet = ss.getSheetByName("INFO");
+  const starterInfo = [
+    ["DINING", "Monkey Man", "Open 12pm-9pm. Gourmet Burgers & Craft Beer."],
+    ["DINING", "Black Fish", "Upscale Seafood & Sushi."],
+    ["POLICIES", "Check-in", "14:00 (2:00 PM). Early check-in subject to availability."],
+    ["POLICIES", "Check-out", "10:00 (10:00 AM) Strict."],
+    ["AMENITIES", "WiFi", "Free High-Speed Fiber. Network: ZAR_GUEST (No Password)."],
+    ["AMENITIES", "Pool", "Rooftop Pool open 06:00 - 18:00."],
+    ["LOCAL", "Galleria Mall", "5min drive. Ice skating, Movies, Shopping."]
+  ];
+  
+  // Add starter rows efficiently
+  starterInfo.forEach(row => infoSheet.appendRow(row));
+
+  // 6. Log the Result to the Console
+  console.log("✅ SUCCESS! New Sheet Created.");
+  console.log("📄 SHEET NAME: " + ss.getName());
+  console.log("🔗 URL: " + url);
+  console.log("🆔 NEW SHEET ID: " + id);
+  console.log("-----------------------------------------");
+  console.log("👉 ACTION REQUIRED: Copy the 'NEW SHEET ID' above and paste it into your Code.gs file.");
+}
