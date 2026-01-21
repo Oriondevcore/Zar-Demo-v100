@@ -17,49 +17,83 @@
 
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        header { background: var(--primary); color: white; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10; }
-        header h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; }
-        header span { color: var(--accent); }
+        /* HEADER WITH LOGO */
+        header { background: var(--primary); color: white; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10; }
+        
+        .brand-area { display: flex; align-items: center; gap: 15px; }
+        .logo-img { height: 45px; width: auto; border-radius: 6px; background: white; padding: 2px; } 
+        .brand-text h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; line-height: 1.2; font-weight: 700; }
+        .brand-text span { color: var(--accent); }
+        .brand-text small { display: block; font-size: 0.7rem; color: #bdc3c7; font-weight: normal; letter-spacing: 0; }
 
-        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        /* CHAT AREA */
+        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; position: relative; }
         
         .message { max-width: 80%; padding: 12px 18px; border-radius: 18px; line-height: 1.5; font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; }
         .user { align-self: flex-end; background: var(--chat-user-bg); color: white; border-bottom-right-radius: 4px; }
         .bot { align-self: flex-start; background: var(--chat-bot-bg); color: #333; border-bottom-left-radius: 4px; border: 1px solid #e0e0e0; }
         
         .bot a { color: var(--accent); font-weight: bold; text-decoration: none; border-bottom: 1px dotted var(--accent); }
-        .bot a:hover { text-decoration: underline; }
+        
+        /* GEMINI BADGE */
+        .gemini-badge { text-align: center; font-size: 11px; color: #7f8c8d; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: 500; }
+        .gemini-badge i { color: #4285F4; } /* Google Blue */
 
+        /* TYPING INDICATOR */
         .typing-indicator { display: none; align-self: flex-start; background: #fff; padding: 10px 15px; border-radius: 18px; border-bottom-left-radius: 4px; color: #aaa; font-size: 0.8rem; font-style: italic; }
 
+        /* QUICK BUTTONS */
         #quick-buttons { padding: 12px; display: flex; gap: 10px; overflow-x: auto; background: #fff; border-top: 1px solid #eee; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         #quick-buttons::-webkit-scrollbar { display: none; }
         
         .q-btn { background: #f8f9fa; border: 1px solid #ddd; color: #444; padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; font-size: 14px; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
         .q-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
         .q-btn.emergency { background: #fee2e2; color: #dc2626; border-color: #fca5a5; font-weight: bold; }
-        .q-btn.emergency:hover { background: #dc2626; color: white; }
 
-        #input-area { display: flex; padding: 15px; background: white; border-top: 1px solid #ddd; align-items: center; gap: 10px; }
+        /* INPUT AREA */
+        #input-wrapper { background: white; border-top: 1px solid #ddd; padding-bottom: 8px; }
+        #input-area { display: flex; padding: 10px 15px; align-items: center; gap: 10px; }
         input { flex: 1; padding: 14px; border-radius: 25px; border: 1px solid #ccc; outline: none; font-size: 16px; background: #f9f9f9; transition: 0.3s; }
         input:focus { border-color: var(--accent); background: white; }
         
-        button.icon-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--primary); padding: 8px; border-radius: 50%; transition: background 0.2s; }
-        button.icon-btn:hover { background: #f0f0f0; }
-        
+        button.icon-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--primary); padding: 8px; border-radius: 50%; }
         .mic-active { color: #dc2626 !important; animation: pulse 1.5s infinite; background: #fee2e2 !important; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
-        @media (max-width: 480px) {
-            .message { max-width: 85%; font-size: 14px; }
-            header h1 { font-size: 1.1rem; }
+        /* EMERGENCY MODAL */
+        #emergency-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(44, 62, 80, 0.95); z-index: 100;
+            justify-content: center; align-items: center;
         }
+        .modal-content {
+            background: white; width: 90%; max-width: 400px; padding: 25px; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; border-top: 6px solid #e74c3c;
+        }
+        .modal-icon { font-size: 40px; color: #e74c3c; margin-bottom: 15px; }
+        .modal-title { font-size: 22px; font-weight: bold; color: #333; margin-bottom: 10px; }
+        .modal-desc { font-size: 14px; color: #666; margin-bottom: 20px; }
+        
+        .modal-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        
+        .modal-btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-cancel { flex: 1; padding: 12px; border: none; background: #eee; color: #555; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-alert { flex: 2; padding: 12px; border: none; background: #e74c3c; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-alert:active { transform: scale(0.98); }
+
     </style>
 </head>
 <body>
 
     <header>
-        <h1>ZAR <span>CONCIERGE</span></h1>
+        <div class="brand-area">
+            <!-- UPDATED LOGO SOURCE -->
+            <img src="./hotel.jpeg" alt="Logo" class="logo-img">
+            <div class="brand-text">
+                <h1>ZAR <span>CONCIERGE</span></h1>
+                <small>Digital Guest Assistant</small>
+            </div>
+        </div>
     </header>
 
     <div id="chat-container">
@@ -73,20 +107,45 @@
         <i class="fas fa-circle-notch fa-spin"></i> Checking with Front Desk...
     </div>
 
+    <!-- QUICK BUTTONS -->
     <div id="quick-buttons">
         <button class="q-btn" onclick="sendQuick('What is the WiFi password?')"><i class="fas fa-wifi"></i> WiFi</button>
         <button class="q-btn" onclick="sendQuick('What time is check out?')"><i class="far fa-clock"></i> Check-out</button>
         <button class="q-btn" onclick="sendQuick('I want to book a table at Monkey Man')"><i class="fas fa-hamburger"></i> Dining</button>
-        <!-- CHANGED: Generic request triggers conversation -->
         <button class="q-btn" onclick="sendQuick('I would like to request housekeeping services.')"><i class="fas fa-broom"></i> Housekeeping</button>
         <button class="q-btn" onclick="openWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
-        <button class="q-btn emergency" onclick="triggerEmergency()"><i class="fas fa-exclamation-triangle"></i> EMERGENCY</button>
+        <button class="q-btn emergency" onclick="openEmergencyModal()"><i class="fas fa-exclamation-triangle"></i> EMERGENCY</button>
     </div>
 
-    <div id="input-area">
-        <input type="text" id="user-input" placeholder="Type or speak..." onkeypress="handleEnter(event)">
-        <button class="icon-btn" id="mic-btn" onclick="toggleVoice()"><i class="fas fa-microphone"></i></button>
-        <button class="icon-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+    <!-- FOOTER INPUT -->
+    <div id="input-wrapper">
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Type or speak..." onkeypress="handleEnter(event)">
+            <button class="icon-btn" id="mic-btn" onclick="toggleVoice()"><i class="fas fa-microphone"></i></button>
+            <button class="icon-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+        <div class="gemini-badge">
+            <i class="fas fa-bolt"></i> Powered by <strong>Gemini 2.0 Flash</strong>
+        </div>
+    </div>
+
+    <!-- EMERGENCY MODAL OVERLAY -->
+    <div id="emergency-modal">
+        <div class="modal-content">
+            <div class="modal-icon"><i class="fas fa-bell"></i></div>
+            <div class="modal-title">Emergency Alert</div>
+            <div class="modal-desc">Please provide details so we can assist you immediately.</div>
+            
+            <input type="text" id="em-name" class="modal-input" placeholder="Your Name">
+            <input type="text" id="em-room" class="modal-input" placeholder="Room Number">
+            <input type="tel" id="em-phone" class="modal-input" placeholder="Contact Number">
+            <input type="text" id="em-issue" class="modal-input" placeholder="Nature of Emergency">
+
+            <div class="modal-btn-group">
+                <button class="btn-cancel" onclick="closeEmergencyModal()">Cancel</button>
+                <button class="btn-alert" onclick="submitEmergency()">🚨 ALERT STAFF</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -129,7 +188,6 @@
         function addMessage(text, sender) {
             const div = document.createElement('div');
             div.className = `message ${sender}`;
-            // Auto-link URLs
             div.innerHTML = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">View Link</a>');
             const container = document.getElementById('chat-container');
             container.appendChild(div);
@@ -141,9 +199,7 @@
             sendMessage();
         }
 
-        function handleEnter(e) {
-            if (e.key === 'Enter') sendMessage();
-        }
+        function handleEnter(e) { if (e.key === 'Enter') sendMessage(); }
 
         function showLoading(show) {
             const indicator = document.getElementById('typing-indicator');
@@ -160,60 +216,57 @@
         // --- VOICE ---
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition;
-        
         if (SpeechRecognition) {
             recognition = new SpeechRecognition();
             recognition.lang = 'en-ZA'; 
             recognition.continuous = false;
-
             recognition.onstart = () => document.getElementById('mic-btn').classList.add('mic-active');
             recognition.onend = () => document.getElementById('mic-btn').classList.remove('mic-active');
-            
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById('user-input').value = transcript;
+                document.getElementById('user-input').value = event.results[0][0].transcript;
                 sendMessage(); 
             };
-        } else {
-            document.getElementById('mic-btn').style.display = 'none'; 
-        }
+        } else { document.getElementById('mic-btn').style.display = 'none'; }
 
         function toggleVoice() { if (recognition) recognition.start(); }
 
         function speak(text) {
             const cleanText = text.replace(/(https?:\/\/[^\s]+)/g, "check the link.").replace(/\|\|.*?\|\|/g, "");
             const utterance = new SpeechSynthesisUtterance(cleanText);
-            const voices = window.speechSynthesis.getVoices();
-            const saVoice = voices.find(v => v.lang === 'en-GB') || voices[0];
-            utterance.voice = saVoice;
+            const saVoice = window.speechSynthesis.getVoices().find(v => v.lang === 'en-GB');
+            if (saVoice) utterance.voice = saVoice;
             window.speechSynthesis.speak(utterance);
         }
 
-        // --- WHATSAPP & EMERGENCY ---
+        // --- WHATSAPP ---
         function openWhatsApp() {
             window.open(`https://wa.me/${WHATSAPP_NUM}?text=Hi%20ZAR%20Hotel,%20I%20have%20a%20question...`, '_blank');
         }
 
-        function triggerEmergency() {
-            // STEP 1: Ask for details immediately
-            if(!confirm("⚠️ Are you sure? This will alert ZAR Security.")) return;
+        // --- EMERGENCY MODAL ---
+        function openEmergencyModal() {
+            document.getElementById('emergency-modal').style.display = 'flex';
+        }
 
-            const name = prompt("Please enter your Full Name:");
-            if(!name) return;
+        function closeEmergencyModal() {
+            document.getElementById('emergency-modal').style.display = 'none';
+        }
 
-            const room = prompt("What is your Room Number?");
-            const contact = prompt("What is your Contact Number? (So we can call you)");
-            const issue = prompt("Please briefly describe the emergency:");
+        function submitEmergency() {
+            const name = document.getElementById('em-name').value;
+            const room = document.getElementById('em-room').value;
+            const phone = document.getElementById('em-phone').value;
+            const issue = document.getElementById('em-issue').value;
 
-            if(!room || !contact) {
-                alert("We need your Room and Contact Number to assist you. Please try again.");
+            if(!name || !room) {
+                alert("Please fill in Name and Room Number.");
                 return;
             }
 
-            // STEP 2: Send detailed alert
-            const fullMessage = `**GUEST:** ${name}\n**ROOM:** ${room}\n**CONTACT:** ${contact}\n**ISSUE:** ${issue || "No details provided"}`;
+            closeEmergencyModal();
+            addMessage("🚨 Alerting Security & Management...", 'bot');
 
-            addMessage("🚨 Alerting staff immediately...", 'bot');
+            const fullMessage = `**GUEST:** ${name}\n**ROOM:** ${room}\n**CONTACT:** ${phone}\n**ISSUE:** ${issue}`;
             
             fetch(API_URL, {
                 method: "POST",
