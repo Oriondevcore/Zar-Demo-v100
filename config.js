@@ -57,7 +57,7 @@ const HOTEL_CONFIG = {
     version: "2.1.0-PROD",
     backend: {
       // PASTE YOUR DEPLOYED GOOGLE SCRIPT URL HERE
-      scriptUrl: "" 
+      scriptUrl: "https://script.google.com/macros/s/AKfycbwQb7bOHwfMQc-L_gqnw_7nLSK2F9iT8cQafTM5fZ-rT6f3tBeJ9ZDjy0AalZ3-I7_m6Q/exec" 
     }
   }
 };
