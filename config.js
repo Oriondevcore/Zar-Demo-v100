@@ -14,7 +14,7 @@ const HOTEL_CONFIG = {
     phone: "+27 31 555 0100",
     email: "reservations@orionhotel.co.za",
     website: "www.orionhotel.co.za",
-    logo: "./orion-hotel-logo.png" // Path to logo image
+    logo: "https://github.com/Oriondevcore/Zar-Demo-v100/blob/main/hotel.jpeg" // Path to logo image
   },
 
   // 🎨 VISUAL THEME
@@ -222,8 +222,8 @@ const HOTEL_CONFIG = {
     
     // Google Apps Script configuration
     backend: {
-      scriptUrl: "", // Set after deploying backend.gs
-      sheetId: "",   // Your Google Sheet ID
+      scriptUrl: "https://script.google.com/macros/s/AKfycbwQb7bOHwfMQc-L_gqnw_7nLSK2F9iT8cQafTM5fZ-rT6f3tBeJ9ZDjy0AalZ3-I7_m6Q/exec", // Set after deploying backend.gs
+      sheetId: "1SVTSyEQm5-k5L5wQ9XbgKuLDHXWXOJqA4KMz6poOriA",   // Your Google Sheet ID
       cacheTimeout: 21600 // 6 hours
     },
     
