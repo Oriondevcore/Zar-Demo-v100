@@ -1,29 +1,22 @@
-const CACHE_NAME = 'zar-hotel-v1';
-const ASSETS = [
-  './',
+const CACHE_NAME = 'zar-v1';
+const urlsToCache = [
   './index.html',
-  './dashboard.html',
-  './hotel.jpeg',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
+  './manifest.json'
 ];
 
-// Install Event
-self.addEventListener('install', (e) => {
-  e.waitUntil(
+self.addEventListener('install', event => {
+  event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS))
+      .then(cache => cache.addAll(urlsToCache))
   );
 });
 
-// Fetch Event
-self.addEventListener('fetch', (e) => {
-  // Exclude API calls (Google Apps Script) from caching so data is always fresh
-  if (e.request.url.includes('script.google.com')) {
-    return;
-  }
-
-  e.respondWith(
-    caches.match(e.request)
-      .then((response) => response || fetch(e.request))
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        if (response) return response;
+        return fetch(event.request);
+      })
   );
 });
